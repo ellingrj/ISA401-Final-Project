@@ -7,7 +7,7 @@ How do advertisements influence the success of a streaming service?
 
 As streaming platforms increasingly adopt ad‑supported models, understanding the relationship between ad load, ad spending, user engagement, and platform performance has become essential. To explore this, we compiled data from eight different sources, consolidated them into a unified dataset, and analyzed cross‑platform patterns to uncover meaningful insights.
 
-Our goal was to determine whether—and how—advertising contributes to a platform’s revenue, viewership, subscriber base, and overall market presence.
+Our goal was to determine how advertising contributes to a platform’s revenue, viewership, subscriber base, and overall market presence.
 
 # Data Sources
 The dataset integrates metrics from industry reports, market research firms, and advertising analytics sources. Below is a breakdown of each variable and its origin.
