@@ -1,0 +1,565 @@
+---
+title: "ISA401 Final"
+author: "Rylee Elling"
+date: "2026-04-29"
+output: html_document
+---
+
+```{r}
+chat <- ellmer::chat_openai(
+  model = "gpt-5-mini-2025-08-07"
+)
+
+usethis::edit_r_environ(scope = "project")
+
+```
+
+
+```{r - Screenmedia's Data About Netflix, Hulu, and Disney}
+
+
+rev <- chat$chat_structured(
+  ellmer::content_image_file("../Data/project_images/statista_2024_revenue.png"),
+  type = ellmer::type_array(ellmer::type_object(
+    Platform = ellmer::type_string(
+      description = "The name of each of the 10 streaming services listed in the bar chart. Separate each service into a new row. 
+      EX: Disney+"
+    ),
+    `Revenue (Millions)` = ellmer::type_string(
+      description = "The revenue for the streaming service in 2024. Listed in the bar chart right of the blue bar. Separate each revenue into a new row. EX: 243.8."
+    )
+  )
+))
+
+rev
+
+# library(tidyverse)
+# rev <- rev |> mutate(revenue_per_member = chat$chat_structured(
+#   ellmer::content_image_file("../Data/project_images/screenmedia_rev_per_mem.png"),
+#   type = ellmer::type_array(ellmer::type_object(
+#     `Revenue Per Member` = ellmer::type_string(
+#       description = "The revenue for the streaming service in June 2022 per member. Listed in the bar chart above the blue bar. Separate each revenue into a new row. EX: 6.27. "
+#     )
+#   )
+# )))
+
+# 
+# 
+# 
+# subscribers <- rev |> mutate(subscribers = chat$chat_structured(
+#   ellmer::content_image_file("../Data/project_images/screenmedia_subs.png"),
+#   type = ellmer::type_array(ellmer::type_object(
+#     `Subscribers (Millions)` = ellmer::type_string(
+#       description = "The subscribers for the streaming service in June 2022. Listed in the bar chart above the blue bar. Separate each number into a new row. EX: 44.5. "
+#     )
+#   )
+# )))
+# 
+# # rev <- rev |> unnest(revenue_per_member)
+# rev <- rev |> unnest(subscribers)
+
+```
+
+
+```{r - Brandience subscription OTT video viewers}
+ott <- chat$chat_structured(
+  ellmer::content_image_file("../Data/project_images/brandience_OTT_views.png"),
+  type = ellmer::type_array(ellmer::type_object(
+    Platform = ellmer::type_string(
+      description = "The name of each of the 12 streaming services listed in the bar chart. Separate each service into a new row. EX: Disney+"
+    ),
+    `Subscription OTT Video Viewers (Millions)` = ellmer::type_string(
+      description = "The video viewers for the streaming service from 2024-2028. Listed in the bar chart right of the blue bar. Separate each revenue into a new row.  EX: 184.2"
+    )
+  )
+))
+
+ott
+```
+
+
+```{r - Top platforms by ad spending}
+
+ad_spend <- chat$chat_structured(
+  ellmer::content_image_file("../Data/project_images/adtechradar_ad_spending.png"),
+  type = ellmer::type_array(ellmer::type_object(
+    Platform = ellmer::type_string(
+      description = "The name of each of the 10 streaming services listed in the chart. Separate each service into a new row. EX: Disney+"
+    ),
+    `2024 Ad Spending (Millions)` = ellmer::type_string(
+      description = "The ad spend for the streaming service from 2024 and 2025. Listed in the  chart under the 2024 column name, to the right of each service. Separate each revenue into a new row.  EX: 4386",
+    required = FALSE
+    ), 
+    `2025 Ad Spending (Millions)` = ellmer::type_string(
+      description = "The ad spend for the streaming service from 2024 and 2025. Listed in the  chart under the 2025 column name, to the right of each service. Separate each revenue into a new row. EX: 4690",
+    required = FALSE
+    ),
+    `Ad Spending % Change` = ellmer::type_string(
+      description = "The change in ad spending from 2025 to 2024 for each streaming service. Listed in the chart under the % change column. Change the percentage to a decimal EX: 7% = 0.07", required = FALSE
+    )
+  )
+))
+
+ad_spend
+
+```
+
+```{r CAGR over Time}
+
+CAGR <- chat$chat_structured(
+  ellmer::content_image_file("../Data/project_images/statista_CAGR_overT.png"),
+  type = ellmer::type_array(ellmer::type_object(
+    Platform = ellmer::type_string(
+      description = "The name of each of the 6 streaming services listed in the bar chart. Separate each service into a new row. EX: Paramount+"
+    ),
+    `Compound Annual Growth Rate (CAGR) (%)` = ellmer::type_string(
+      description = "The CAGR for the streaming service. Listed in the bar chart above the blue bar. Separate each revenue into a new row. Write this number without the percent symbol. Change the percentage to a decimal EX: 37% = 0.37"
+    )
+  )
+))
+
+CAGR
+
+```
+
+```{r }
+
+watch_time <- chat$chat_structured(
+  ellmer::content_image_file("../Data/project_images/statistia_watch_time.png"),
+  type = ellmer::type_array(ellmer::type_object(
+    Platform = ellmer::type_string(
+      description = "The name of each of the 6 streaming services listed in the bar chart. Separate each service into a new row. EX: Disney+"
+    ),
+    `Active Users Average Daily Watch Time (minutes)` = ellmer::type_string(
+      description = "The time spent in minutes the avg daily viewer watches for each platform. Listed above the left most blue bar charts of each pair. Separate each into a new row.  EX: 63"
+    ),
+    
+    `Total Adults Average Daily Watch Time (minutes)` = ellmer::type_string(
+      description = "The time spent in minutes the avg daily viewer watches for each platform. Listed above the right most dark bar charts of each pair. Separate each into a new row.  EX: 36"
+    )
+  )
+))
+
+watch_time
+```
+
+```{r}
+robotstxt::paths_allowed(
+  paths = "/how-many-ads-does-each-streaming-service-show", #The first path after the domain that we want to access
+  domain = "https://thestreamable.com"
+  
+)
+
+
+webpage <- rvest::read_html("https://thestreamable.com/how-many-ads-does-each-streaming-service-show")
+
+webpage |>
+  rvest::html_elements("#content > article > div.markdown-body.width-fit.draft-current-text > table") |>
+  rvest::html_table() -> all_tables
+
+all_tables
+
+big_table = dplyr::left_join(all_tables[[1]], all_tables[[2]], by = c('Streamer', 'Original Article'))
+big_table = dplyr::left_join(big_table, all_tables[[3]], by = c('Streamer', 'Original Article'))
+
+big_table
+
+library(dplyr)
+library(purrr)
+
+big_table <- reduce(
+  all_tables,
+  left_join,
+  by = c("Streamer", "Original Article")
+)
+
+names(big_table
+      )
+
+big_table <- big_table |> dplyr::select(-`Original Article`)
+
+big_table <- big_table |> rename(Platform = Streamer)
+
+big_table[[2]] |> as.list() -> prompts
+
+prompts
+
+ep_breaks <- ellmer::type_object( #create a type thing (used by ellmer)
+  #time to record what we want to extract specifically 
+  `Pre-roll breaks per 30 min episode` = ellmer::type_string( 
+    description = "Whether the streaming service has ads during the pre-roll or not. EX: No pre-roll "
+  ),
+  `Minimum breaks per 30 min episode` = ellmer::type_string( 
+    description = "The minimum number of breaks during an episode. Represented in the list as number to number breaks during. Pick the smaller number. EX: 2"
+  ),
+  `Maximum breaks per 30 min episode` = ellmer::type_string( 
+    description = "The maximum number of breaks during an episode. Represented in the list as number to number breaks during. Pick the larger number. EX: 6", required = FALSE
+  )
+)
+
+ep_breaks_extracted <- ellmer::parallel_chat_structured(chat, prompts, type = ep_breaks) 
+
+
+
+```
+
+
+```{r Movie Breaks}
+
+
+big_table[[3]] |> as.list() -> prompts
+
+prompts
+
+mov_breaks <- ellmer::type_object( #create a type thing (used by ellmer)
+  #time to record what we want to extract specifically 
+  `Pre-roll breaks per movie` = ellmer::type_string( 
+    description = "Extract whether the text contains 'Pre-roll' or 'No pre-roll'.
+Rules:
+- If the text contains 'No pre-roll', output 'No pre-roll'.
+- If the text contains 'Pre-roll', output 'Pre-roll'.
+- If both appear, output 'Pre-roll'.
+- Ignore all other text."
+  ),
+  `Minimum breaks per movie` = ellmer::type_string( 
+    description = "Extract the minimum number of breaks during the movie.
+Rules:
+1. If the text contains 'mid-playback break', set minimum = 0.
+2. If the text contains 'long pre-roll break' and no other numbers, set minimum = 0.
+3. If the text contains a numeric range 'X to Y breaks', set minimum = X.
+4. If the text contains a single number 'X breaks', set minimum = X.
+5. If no number appears, return NA.
+Examples:
+- 'Pre-roll, 6 to 9 breaks during' → 6
+- '1 long pre-roll break' → 0
+- '1 long pre-roll break or mid-playback break' → 0
+- 'Pre-roll, during' → NA", required = FALSE
+  ),
+  `Maximum breaks per movie` = ellmer::type_string( 
+    description = "Extract the maximum number of breaks during the movie.
+Rules:
+1. If the text contains 'mid-playback break', set maximum = 1.
+2. If the text contains 'long pre-roll break' and no other numbers, set maximum = 0.
+3. If the text contains a numeric range 'X to Y breaks', set maximum = Y.
+4. If the text contains a single number 'X breaks', set maximum = X.
+5. If no number appears, return NA.
+Examples:
+- 'Pre-roll, 6 to 9 breaks during' → 9
+- '1 long pre-roll break' → 0
+- '1 long pre-roll break or mid-playback break' → 1
+- 'Pre-roll, during' → NA", required = FALSE
+  )
+)
+
+mov_breaks_extracted <- ellmer::parallel_chat_structured(chat, prompts, type = mov_breaks) 
+
+```
+
+
+```{r Ad break lengths}
+big_table[[4]] |> as.list() -> prompts_tv_len
+
+prompts_tv_len
+
+ad_break_length_tv <- ellmer::type_object( #create a type thing (used by ellmer)
+  #time to record what we want to extract specifically 
+  `Minimum Ad break length per TV show (seconds)` = ellmer::type_string( 
+    description = "Extract the minimum length of ads in seconds.
+Rules:
+1. If the text contains a numeric range 'X to Y seconds', set minimum = X.
+2. If the text contains a numeric range 'X minutes', set minimum = X * 60.
+3. If the text contains a single number 'X seconds', set minimum = X.
+Examples:
+- '75 to 105 seconds' → 75
+- '3 minutes' → 180
+- '75 seconds' → 75"
+  ),
+  `Maximum Ad break length per TV show (seconds)` = ellmer::type_string( 
+    description = "Extract the maximum length of ads in seconds.
+Rules:
+1. If the text contains a numeric range 'X to Y seconds', set maximum = Y.
+2. If the text contains a numeric range 'X minutes', set maximum = X * 60.
+3. If the text contains a single number 'X seconds', set maximum = X.
+Examples:
+- '75 to 105 seconds' → 105
+- '3 minutes' → 180
+- '75 seconds' → 75"
+  )
+)
+
+ad_length_tv_extracted <- ellmer::parallel_chat_structured(chat, prompts_tv_len, type = ad_break_length_tv) 
+
+
+
+big_table[[5]] |> as.list() -> prompts_mov_len
+
+prompts_mov_len
+
+ad_break_length_mov <- ellmer::type_object( #create a type thing (used by ellmer)
+  #time to record what we want to extract specifically 
+  `Minimum Ad break length per movie (seconds)` = ellmer::type_string( 
+    description = "Extract the minimum length of ads in seconds.
+Rules:
+1. If the text contains a numeric range 'X to Y seconds', set minimum = X.
+2. If the text contains a numeric range 'X minutes', set minimum = X * 60.
+3. If the text contains a numeric range 'X minutes, Y seconds', set minimum = (X * 60) + Y.
+4. If the text contains a single number 'X seconds', set minimum = X.
+Examples:
+- '75 to 105 seconds' → 75
+- '3 minutes' → 180
+- '75 seconds' → 75
+- '2 minutes, 15 seconds' → 135
+"
+  ),
+  `Maximum Ad break length per movie (seconds)` = ellmer::type_string( 
+    description = "Extract the maximum length of ads in seconds.
+Rules:
+1. If the text contains a numeric range 'X to Y seconds', set maximum = Y.
+2. If the text contains a numeric range 'X minutes', set maximum = X * 60.
+3. If the text contains a numeric range 'X minutes, Y seconds', set minimum = (X * 60) + Y.
+4. If the text contains a single number 'X seconds', set maximum = X.
+Examples:
+- '75 to 105 seconds' → 105
+- '3 minutes' → 180
+- '75 seconds' → 75
+- '2 minutes, 15 seconds' → 135
+"
+  )
+)
+
+ad_length_mov_extracted <- ellmer::parallel_chat_structured(chat, prompts_mov_len, type = ad_break_length_mov) 
+```
+```{r Ads per title}
+big_table[[6]] |> as.list() -> prompts_title_tv
+
+ad_title_tv <- ellmer::type_object( 
+  `Minimum Ads per TV episode (minutes)` = ellmer::type_string( 
+    description = "Extract the minimum ad length in minutes
+Rules:
+1. If the text contains a numeric range 'X to Y minutes', set minimum = X.
+Examples:
+- '4 to 10 minutes' → 4
+- '2 to 5 minutes' → 2
+"
+  ),
+  `Maximum Ads per TV episode (minutes)` = ellmer::type_string( 
+    description = "Extract the maximum ad length in minutes
+Rules:
+1. If the text contains a numeric range 'X to Y minutes', set maximum = Y.
+Examples:
+- '4 to 10 minutes' → 10
+- '2 to 5 minutes' → 5
+"
+  )
+)
+
+ad_title_tv_extracted <- ellmer::parallel_chat_structured(chat, prompts_title_tv, type = ad_title_tv) 
+
+
+
+big_table[[7]] |> as.list() -> prompts_title_mov
+
+ad_title_mov <- ellmer::type_object( 
+  `Minimum Ads per movie (minutes)` = ellmer::type_string( 
+    description = "Extract the minimum ad length in minutes
+Rules:
+1. If the text contains a numeric range 'X to Y minutes', set minimum = X.
+2. If the text contains a numeric 'X minutes', set minimum = X.
+Examples:
+- '4 to 10 minutes' → 4
+- '2 to 5 minutes' → 2
+"
+  ),
+  `Maximum Ads per movie (minutes)` = ellmer::type_string( 
+    description = "Extract the maximum ad length in minutes
+Rules:
+1. If the text contains a numeric range 'X to Y minutes', set maximum = Y.
+2. If the text contains a numeric 'X minutes', set maximum = X.
+Examples:
+- '4 to 10 minutes' → 10
+- '2 to 5 minutes' → 5
+"
+  )
+)
+
+ad_title_mov_extracted <- ellmer::parallel_chat_structured(chat, prompts_title_mov, type = ad_title_mov) 
+```
+
+```{r}
+robotstxt::paths_allowed(
+  paths = "resources/most-watched-streaming-service-q4-2025", #The first path after the domain that we want to access
+  domain = "https://adwave.com"
+  
+)
+
+
+adwave_webpage <- rvest::read_html("https://adwave.com/resources/most-watched-streaming-service-q4-2025")
+
+adwave_webpage |>
+  rvest::html_elements("ul > li > p > b") |>
+  rvest::html_text() -> streaming
+
+streaming <- streaming[1:9]
+
+streaming
+
+streaming |> as.list() -> prompt_view_share
+
+US_view_share <- ellmer::type_object( 
+  `Platform` = ellmer::type_string( 
+    description = "The streaming platform name.
+Rules:
+1. If the text contains (combined), follow the examples below.
+2. If the text contains Streaming, follow the examples below.
+3. Otherwise, report the written text as written. 
+Examples:
+- 'Disney (combined): 4.7%' → Disney+ and Hulu
+- 'Paramount Streaming: 2.5%' → Paramount+
+- 'Prime Video: 4.3%' → Prime Video
+"
+  ),
+  `Share of total U.S. TV viewing (%)` = ellmer::type_string( 
+    description = "Extract the share of total tv viewing.
+Rules:
+1. If the text contains a numeric value '2.5%', set viewing = 0.025.
+2. Change the percentage to a decimal
+Examples:
+- 'Tubi: 2.0%' → 0.02
+- 'Max: 1.8%' → 0.018
+"
+  )
+)
+
+TV_viewing_share <- ellmer::parallel_chat_structured(chat, prompt_view_share, type = US_view_share) 
+
+```
+
+```{r}
+
+global_sub_webpage <- rvest::read_html("https://electroiq.com/stats/streaming-services-statistics/")
+
+global_sub_webpage |>
+  rvest::html_elements("table") |>
+  rvest::html_table() -> streaming
+
+global_subs <- streaming[[2]]
+global_subs <- global_subs |> select(-c(X2,X3,X5))
+colnames(global_subs) <- global_subs[1,]
+global_subs <- global_subs[-1,]
+
+global_subs <- global_subs[1:18,]
+
+global_subs$Subscribers <- as.numeric(gsub(" million", "", global_subs$Subscribers))
+
+global_subs <- global_subs |> rename("Platform" = "Service Name")
+global_subs <- global_subs |> rename("Subscribers (Millions)" = "Subscribers")
+
+```
+
+
+```{r}
+household <- streaming[20:24]
+
+household |> as.list() -> prompt_households
+
+household_reach_percent <- ellmer::type_object( 
+  `Platform` = ellmer::type_string( 
+    description = "The streaming platform name.
+Examples:
+- 'Disney+: 34%' → Disney+
+- 'Amazon Prime Video: 67%' → Prime Video
+"
+  ),
+  `U.S. household penetration (% of US households)` = ellmer::type_string( 
+    description = "Extract the % of US households penetrated. 
+    Rule: Change the percentage to a decimal.
+Examples:
+- 'Amazon Prime Video: 67%' → 0.67
+"
+  )
+)
+
+household_reach <- ellmer::parallel_chat_structured(chat, prompt_households, type = household_reach_percent) 
+```
+
+
+```{r}
+
+
+# streaming_mkt_share_webpage <- rvest::read_html("https://evoca.tv/streaming-service-market-share/")
+# 
+# streaming_mkt_share_webpage |>
+#   rvest::html_elements("#content > div > div > div > div > div > div.wp-block-column.boxed.is-layout-flow.wp-block-column-is-layout-flow > div.entry-content.wp-block-post-content.is-layout-flow.wp-container-core-post-content-is-layout-f5bb311e.wp-block-post-content-is-layout-flow > figure > table") |>
+#   rvest::html_table() -> stream_mkt_share
+#  
+# stream_mkt_share <- stream_mkt_share[[1]]
+# 
+# stream_mkt_share %>%
+#   mutate(across(everything(), ~ sub("%$", "", .x)))
+# stream_mkt_share[2] <- as.numeric(stream_mkt_share[2])/100
+# 
+# 
+# stream_mkt_share <- stream_mkt_share <- stream_mkt_share |> rename(Platform = `Video Streaming Platforms In The US`)
+
+
+
+```
+
+
+
+
+```{r}
+platform_extraction <- bind_cols(big_table[1], ad_title_mov_extracted, ad_title_tv_extracted, ad_length_mov_extracted, ad_length_tv_extracted, mov_breaks_extracted, ep_breaks_extracted)
+master_set <- bind_rows(rev, ott, ad_spend, CAGR)
+
+rev
+ott
+ad_spend
+CAGR
+#experience
+household_reach
+global_subs
+TV_viewing_share
+platform_extraction
+watch_time
+rev
+
+ott[5, "Platform"] <- "HBO Max"
+platform_extraction[5, "Platform"] <- "HBO Max"
+TV_viewing_share[8, "Platform"] <- "HBO Max"
+watch_time[5, "Platform"] <- "HBO Max"
+rev[1, "Platform"] <- "HBO Max"
+# stream_mkt_share[3, "Platform"] <- "HBO Max"
+ott[11, "Platform"] <- "Hulu TV"
+CAGR[2, "Platform"] <- "Disney+"
+platform_extraction[12, "Platform"] <- "Amazon Prime Video"
+household_reach[3, "Platform"] <- "Amazon Prime Video"
+TV_viewing_share[4, "Platform"] <- "Amazon Prime Video"
+global_subs[6, "Platform"] <- "Amazon Prime Video"
+platform_extraction[2, "Platform"] <- "Discovery+"
+global_subs[13, "Platform"] <- "Paramount+"
+
+master_set <- rev |>
+  full_join(ott,      by = "Platform") |>
+  full_join(ad_spend, by = "Platform") |>
+  full_join(CAGR,     by = "Platform") |> 
+  full_join(household_reach,      by = "Platform") |>
+  full_join(global_subs, by = "Platform") |>
+  full_join(TV_viewing_share,     by = "Platform") |> 
+  full_join(platform_extraction,     by = "Platform") |> 
+  full_join(watch_time,     by = "Platform")
+
+names(master_set)
+
+master_set <- master_set %>%
+  mutate(across(-c(Platform, `Pre-roll breaks per movie`,`Pre-roll breaks per 30 min episode`), as.numeric))
+
+master_set
+```
+
+```{r}
+library(readr)
+
+write_csv(master_set, "C:\\Users\\rylee\\OneDrive\\Desktop\\401_data.csv")
+```
+
