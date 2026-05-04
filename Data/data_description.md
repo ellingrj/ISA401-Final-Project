@@ -14,7 +14,7 @@ This dataset provides information about various streaming services and their ads
 ## Field Definitions
 
 | Field | Description | Source |
-|---|---|
+|---|---|---|
 | `2022 Revenue (billions)` | Estimated revenue from 2022 for select leading streaming apps | Insider Monkey - 15 Biggest Streaming and TV Companies in the US |
 | `Subscription OTT Video Viewers (Millions)` | Estimated number of individuals in the U.S. who watch subscription-based OTT (over‑the‑top) video services such as Netflix, Hulu, Disney+, etc. | Brandience – Why Video Streaming Ads Are the Next Big Opportunity for Digital Marketers |
 | `2024 Ad Spending (Millions)` | Total U.S. advertising spend directed to major streaming platforms in 2024 (May be empty for untracked revenues) | EMARKETER Top 10 US Streaming TV Platforms, Ranked by Ad Spending, 2024 & 2025 |
