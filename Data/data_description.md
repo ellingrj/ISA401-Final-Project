@@ -7,7 +7,7 @@
 
 ## Overview
 
-This dataset provides information about various streaming services and their ads. 
+This dataset gives a clear snapshot of how major streaming services perform, how widely they’re used, and how much advertising they carry. It includes numbers on revenue, subscribers, ad spending, household reach, viewing share, and detailed ad‑load patterns. Altogether, it helps compare how big each platform is and what the ad experience looks like for viewers.
 
 ---
 
