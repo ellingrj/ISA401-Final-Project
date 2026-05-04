@@ -357,8 +357,18 @@ display: none;
 </div>
 
 
-<div id="info-about-what-this-project-is" class="section level2">
-<h2>INFO ABOUT WHAT THIS PROJECT IS</h2>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+</div>
+<div id="this-file-contains-information-about-the-data-acquisition-cleaning-transformation-validation-and-merging-of-our-final-isa401-project-dataset." class="section level1">
+<h1>This file contains information about the data acquisition, cleaning,
+transformation, validation, and merging of our final ISA401 project
+dataset.</h1>
+</div>
+<div id="we-acquire-data-from-8-different-sources-culminating-in-a-dataset-with-26-data-categories-and-37-different-streaming-servicescombinations." class="section level1">
+<h1>We acquire data from 8 different sources, culminating in a dataset
+with 26 data categories and 37 different streaming
+services/combinations.</h1>
 <pre class="r"><code>chat &lt;- ellmer::chat_openai(
   model = &quot;gpt-5-mini-2025-08-07&quot;
 )
@@ -368,30 +378,171 @@ usethis::edit_r_environ(scope = &quot;project&quot;)</code></pre>
 ##   Project/ISA401 Final Project&quot;.</code></pre>
 <pre><code>## ☐ Edit &#39;.Renviron&#39;.</code></pre>
 <pre><code>## ☐ Restart R for changes to take effect.</code></pre>
-<table>
-<tbody>
-<tr class="odd">
-<td align="left"># Web scraping and data collection to collect data for
-the database</td>
-</tr>
-</tbody>
-</table>
+</div>
+<div id="import-libraries-used-in-the-project" class="section level1">
+<h1>Import libraries used in the project</h1>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.6
+## ✔ forcats   1.0.1     ✔ stringr   1.6.0
+## ✔ ggplot2   4.0.1     ✔ tibble    3.3.1
+## ✔ lubridate 1.9.4     ✔ tidyr     1.3.2
+## ✔ purrr     1.2.1     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(dplyr)
+library(purrr)
+library(readr)</code></pre>
+<div id="scraping-and-cleaning-insider-monkey-revenue-data" class="section level2">
+<h2>Scraping and Cleaning Insider Monkey Revenue Data</h2>
 <pre class="r"><code># Use the ellmer package to read the Statista bar chart of the revenue of streaming services, saved as a PNG file. 
 # Scrape from this image the name of each streaming platform as a string and the revenue as listed in the bar chart as decimal.
 
 
-revenue &lt;- chat$chat_structured(
-  ellmer::content_image_file(&quot;../Data/project_images/statista_2024_revenue.png&quot;),
-  type = ellmer::type_array(ellmer::type_object(
-    Platform = ellmer::type_string(
-      description = &quot;The name of each of the 10 streaming services listed in the bar chart. Separate each service into a new row. 
-      EX: Disney+&quot;
-    ),
-    `Revenue (Millions)` = ellmer::type_number(
-      description = &quot;The revenue for the streaming service in 2024. Listed in the bar chart right of the blue bar. Separate each revenue into a new row. EX: 243.8.&quot;
-    )
+# Verify that the Hollywood Reporter site allows web scraping for the path we wish to scrape
+# A TRUE result allows web scraping
+
+robotstxt::paths_allowed(
+  paths = &quot;/business/business-news/streaming-profit-report-netflix-leads-disney-warner-bros-1236184451/&quot;,
+  domain = &quot;https://www.hollywoodreporter.com&quot;
+)</code></pre>
+<pre><code>##  https://www.hollywoodreporter.com</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># Insider Monkey has ranked the top 15 streaming sites and included each sites&#39; revenue. These are spread across 6 different pages
+
+
+# Start with the bottom 10 ranked sites
+# read the html of the site into a variable
+
+hreporter_webpage_top15 &lt;- rvest::read_html(&quot;https://www.insidermonkey.com/blog/15-biggest-streaming-and-tv-companies-in-the-us-1192787/&quot;)
+
+# Pull the platform names from the website using rvest and the associated html elements
+
+hreporter_webpage_top15 |&gt;
+  rvest::html_elements(&quot;#post-1192787 &gt; div.clearfix &gt; div &gt; h3 &gt; b&quot;) |&gt;
+  rvest::html_text() -&gt; rev_10
+
+# convert the text that was scraped into a tibble
+platforms_10 &lt;- tibble(Platform = rev_10)
+
+# Clean the tibble by removing the empty row
+platforms_10 &lt;- platforms_10[-3, ]
+
+
+# Pull the revenues from the website
+hreporter_webpage_top15 |&gt;  
+  rvest::html_elements(&quot;div &gt; p &gt; b &gt; i&quot;) |&gt; rvest::html_text() -&gt; rev_val_10
+
+# convert the scraped text into a tibble and clean by removing the empty row
+rev_10 &lt;- tibble(Revenue = rev_val_10)
+rev_10 &lt;- rev_10[-4, ]
+
+# combine the tibbles into one data frame that now contains the name and revenue of 10/15 of the top performing streaming sites
+# bot_10_revs &lt;- data.frame(platforms_10, rev_10)
+revenues &lt;- data.frame(platforms_10, rev_10)
+
+
+
+# The 5th ranked streaming site
+
+# read the html of the site into a variable
+hreporter_webpage_top5 &lt;- rvest::read_html(&quot;https://www.insidermonkey.com/blog/5-biggest-streaming-and-tv-companies-in-the-us-1192786/&quot;)
+
+# scrape the platform name
+hreporter_webpage_top5 |&gt;
+  rvest::html_elements(&quot;div.clearfix &gt; div &gt; h3 &gt; b&quot;) |&gt;
+  rvest::html_text() -&gt; Platform
+
+# scrape the revenue
+hreporter_webpage_top5 |&gt;  
+  rvest::html_elements(&quot;div &gt; p &gt; b &gt; i&quot;) |&gt; rvest::html_text() -&gt; Revenue
+
+# create a data frame for the 5th ranked platform and its revenue
+df &lt;- data.frame(Platform, Revenue)
+
+# combine the dataframes together to get 11/15 of the sites
+# bot_10_revs &lt;- rbind(bot_10_revs, df)
+revenues &lt;- rbind(revenues, df)
+
+# Function to scrape the remaining 4 pages
+
+# use the page number from a list below to scrape the corresponding page of the remaining platform names and revenue
+scrape_monkey &lt;- function(page){
+  url &lt;- paste0(&quot;https://www.insidermonkey.com/blog/5-biggest-streaming-and-tv-companies-in-the-us-1192786/&quot;, page, &quot;/&quot;) 
+  hreporter_webpage &lt;- rvest::read_html(url)
+  Sys.sleep(2)
+  
+  # scrape the webpage for the platform name
+  hreporter_webpage |&gt;
+  rvest::html_elements(&quot;div.clearfix &gt; div &gt; h3 &gt; b&quot;) |&gt;
+  rvest::html_text() -&gt; platform
+  
+  # scrape the webpage for the revenue
+  hreporter_webpage |&gt;  
+  rvest::html_elements(&quot;div &gt; p &gt; b &gt; i&quot;) |&gt; rvest::html_text() -&gt; rev
+
+  # put these values into a dataframe, to be returned and combined into the final datframe
+  df &lt;- data.frame(Platform = platform, Revenue = rev)
+  
+  Sys.sleep(2) #2 seconds
+  
+  return(df)
+  
+}
+
+# page numbers of the remaining pages needed to be scraped
+pages &lt;- c(&#39;5&#39;,&#39;4&#39;,&#39;3&#39;,&#39;2&#39;)
+
+# loop through the remaining 4 pages and add the names and revenues to complete the dataframe
+for (nums in pages){
+  df = scrape_monkey(page = nums)
+  head(df)
+  revenues &lt;- rbind(revenues, df)
+}
+
+
+rev_prompt &lt;- revenues
+# Prompts to clean platform names and revenues by removing the bullet point numbers and &quot;Estimated 2022 Revenue: $&quot; and &quot;billion&quot; from the revenues
+platform_revenue &lt;- ellmer::type_object( 
+  `Platform` = ellmer::type_string(
+    description = &quot;The streaming platform name. Write each platform name as a new row. There must be 15 total rows.
+Rules:
+1. If the text is written as &#39;numeric.&#39;X. Y&#39;, write Y
+2. If the text contains (NYSE:, follow the example below.
+Examples:
+- &#39;2. Amazon Prime Video&#39; → Amazon Prime Video
+- &#39;14. fuboTV Inc. (NYSE:&#39; → fuboTV Inc.
+- &#39;3. Disney+ &#39; → Disney+
+&quot;
   )
-))</code></pre>
+,
+`2022 Revenue (billions)` = ellmer::type_number(
+    description = &quot;Extract the share of total tv viewing. Write each revenue value as a new row. There should be 15 total rows.
+Rules:
+1. If the text contains Estimated 2022 Revenue: $X billion, write X
+2. If the text contains 2022 Revenue: $Y billion, write Y
+Examples:
+- &#39;2022 Revenue: $1 billion&#39; → 1
+- &#39;Estimated 2022 Revenue: $2.6 billion&#39; → 2.6
+&quot;
+  )
+)
+
+
+# Clean the revenues data using the prompts above
+revenue &lt;- ellmer::parallel_chat_structured(chat, rev_prompt, type = ellmer::type_array(platform_revenue)) </code></pre>
+<pre><code>## [working] (0 + 0) -&gt; 1 -&gt; 1 | ■■■■■■■■■■■■■■■■ 50%</code></pre>
+<pre class="r"><code># collect the cleaned platform names and revenues 
+revenue &lt;- cbind(revenue[[1]], revenue[[2]])
+
+# # remove the unrelated and redundant columns
+revenue &lt;- revenue[, -2]
+revenue &lt;- revenue[, -2]</code></pre>
+</div>
+<div id="scraping-brandience-subscription-ott-video-viewers-data" class="section level2">
+<h2>Scraping Brandience subscription OTT video viewers Data</h2>
 <pre class="r"><code># Use the ellmer package to read the Brandience bar chart of the subscription OTT video viewers in the US by streaming service provider, saved as a PNG file. 
 
 # Scrape from this image the name of each streaming platform as a string and the OTT as listed in the bar chart as decimal.
@@ -407,6 +558,9 @@ ott &lt;- chat$chat_structured(
     )
   )
 ))</code></pre>
+</div>
+<div id="scraping-emarketer-top-platforms-by-ad-spending-data" class="section level2">
+<h2>Scraping Emarketer Top platforms by ad spending data</h2>
 <pre class="r"><code># Use the ellmer package to read the Emarketer table of the Top 10 Streaming TV Platforms Ranked by Ad Spending, saved as a PNG file. 
 
 # Scrape from this image the name of each streaming platform as a string, the ad spend in 2024 as an integer, the ad spend in 2025 as an integer, and the % change as a decimal.
@@ -431,24 +585,10 @@ ad_spend &lt;- chat$chat_structured(
       description = &quot;The change in ad spending from 2025 to 2024 for each streaming service. Listed in the chart under the % change column. Change the percentage to a decimal EX: 7% = 0.07&quot;, required = FALSE
     )
   )
-))
-
-ad_spend</code></pre>
-<pre><code>## # A tibble: 10 × 4
-##    Platform 2024 Ad Spending (Mi…¹ 2025 Ad Spending (Mi…² `Ad Spending % Change`
-##    &lt;chr&gt;                     &lt;int&gt;                  &lt;int&gt;                  &lt;dbl&gt;
-##  1 Hulu                       4386                   4690                   0.07
-##  2 Amazon …                     NA                   3039                  NA   
-##  3 Peacock                    1579                   1911                   0.21
-##  4 Paramou…                   1205                   1395                   0.16
-##  5 Pluto TV                   1199                   1271                   0.06
-##  6 Disney+                    1131                   1259                   0.11
-##  7 HBO Max                     961                   1166                   0.21
-##  8 Netflix                     932                   1171                   0.26
-##  9 Tubi                        881                   1050                   0.19
-## 10 Discove…                    361                     NA                  NA   
-## # ℹ abbreviated names: ¹​`2024 Ad Spending (Millions)`,
-## #   ²​`2025 Ad Spending (Millions)`</code></pre>
+))</code></pre>
+</div>
+<div id="scraping-and-cleaning-cagr-over-time-data-from-statista" class="section level2">
+<h2>Scraping and Cleaning CAGR over time data from Statista</h2>
 <pre class="r"><code># Use the ellmer package to read the Statista bar chart of the Compound Annual Growth Rate over time for varying streaming services. 
 
 # Scrape from this image the name of each streaming platform as a string and the CAGR as listed in the bar chart as decimal.
@@ -465,6 +605,9 @@ CAGR &lt;- chat$chat_structured(
     )
   )
 ))</code></pre>
+</div>
+<div id="scraping-watch-time-data-from-statista" class="section level2">
+<h2>Scraping watch time data from Statista</h2>
 <pre class="r"><code># Use the ellmer package to read the Statista double bar chart of the watch times for active users and total adults for varying streaming services. 
 
 # Scrape from this image the name of each streaming platform as a string, the watch time of active users as an integer, and the watch time of the total adults as an integer.
@@ -485,6 +628,9 @@ watch_time &lt;- chat$chat_structured(
     )
   )
 ))</code></pre>
+</div>
+<div id="scraping-and-cleaning-ad-break-data-from-streamable" class="section level2">
+<h2>Scraping and Cleaning Ad break data from Streamable</h2>
 <pre class="r"><code># Verify that the Streamable site allows web scraping for the path we wish to scrape
 # A TRUE result allows web scraping
 
@@ -517,160 +663,48 @@ big_table = dplyr::left_join(all_tables[[1]], all_tables[[2]], by = c(&#39;Strea
 big_table = dplyr::left_join(big_table, all_tables[[3]], by = c(&#39;Streamer&#39;, &#39;Original Article&#39;))
 
 
-library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;
-## 
-## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag
-## 
-## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(purrr)
+# remove the column containing information about the original article
 
-# Reduce the table by 
+big_table &lt;- big_table |&gt; dplyr::select(-`Original Article`)
 
-big_table &lt;- reduce(
-  all_tables,
-  left_join,
-  by = c(&quot;Streamer&quot;, &quot;Original Article&quot;)
-)
-
-names(big_table
-      )</code></pre>
-<pre><code>## [1] &quot;Streamer&quot;                                      
-## [2] &quot;Breaks per 30 minute episode&quot;                  
-## [3] &quot;Breaks per movie&quot;                              
-## [4] &quot;Original Article&quot;                              
-## [5] &quot;Ad break length per TV show&quot;                   
-## [6] &quot;Ad break length per movie&quot;                     
-## [7] &quot;Ads per TV episode&quot;                            
-## [8] &quot;Ads per movie&quot;                                 
-## [9] &quot;Did the service include ads with kids’ titles?&quot;</code></pre>
-<pre class="r"><code>big_table &lt;- big_table |&gt; dplyr::select(-`Original Article`)
-
+# rename the Streamer column to be Platform to match other dataframes
 big_table &lt;- big_table |&gt; rename(Platform = Streamer)
 
+# store the second column of the dataframe as a list in prompts to be used with ellmer below
+# this list will contain information about the breaks per 30 minute episode
 big_table[[2]] |&gt; as.list() -&gt; prompts
 
-prompts</code></pre>
-<pre><code>## [[1]]
-## [1] &quot;Pre-roll, 3 to 8 breaks during&quot;
-## 
-## [[2]]
-## [1] &quot;Pre-roll, 2 to 4 breaks during&quot;
-## 
-## [[3]]
-## [1] &quot;Pre-roll, 2 to 5 breaks during&quot;
-## 
-## [[4]]
-## [1] &quot;Pre-roll, 3 to 4 breaks during&quot;
-## 
-## [[5]]
-## [1] &quot;Pre-roll, 3 to 4 breaks during&quot;
-## 
-## [[6]]
-## [1] &quot;Pre-roll, 3 to 8 breaks during&quot;
-## 
-## [[7]]
-## [1] &quot;No pre-roll, 2 to 4 breaks during&quot;
-## 
-## [[8]]
-## [1] &quot;Pre-roll, 3 to 4 breaks during&quot;
-## 
-## [[9]]
-## [1] &quot;Pre-roll, 3 to 5 breaks during&quot;
-## 
-## [[10]]
-## [1] &quot;Pre-roll, 2 to 4 breaks during&quot;
-## 
-## [[11]]
-## [1] &quot;Pre-roll, 3 to 6 breaks during&quot;
-## 
-## [[12]]
-## [1] &quot;Pre-roll, 4 breaks during&quot;
-## 
-## [[13]]
-## [1] &quot;Pre-roll, 3 to 6 breaks during&quot;
-## 
-## [[14]]
-## [1] &quot;No pre-roll, 2 to 4 breaks during&quot;
-## 
-## [[15]]
-## [1] &quot;Pre-roll, 2 to 4 breaks during&quot;</code></pre>
-<pre class="r"><code>ep_breaks &lt;- ellmer::type_object( #create a type thing (used by ellmer)
-  #time to record what we want to extract specifically 
+# prompts for the chat to follow to separate the data into 3 columns: Whether the streaming service has ads during the pre-roll, the minumum number of breaks during an episode, and the maximum number of breaks
+ep_breaks &lt;- ellmer::type_object( 
   `Pre-roll breaks per 30 min episode` = ellmer::type_string( 
     description = &quot;Whether the streaming service has ads during the pre-roll or not. EX: No pre-roll &quot;
   ),
-  `Minimum breaks per 30 min episode` = ellmer::type_string( 
+  `Minimum breaks per 30 min episode` = ellmer::type_integer( 
     description = &quot;The minimum number of breaks during an episode. Represented in the list as number to number breaks during. Pick the smaller number. EX: 2&quot;
   ),
-  `Maximum breaks per 30 min episode` = ellmer::type_string( 
+  `Maximum breaks per 30 min episode` = ellmer::type_integer( 
     description = &quot;The maximum number of breaks during an episode. Represented in the list as number to number breaks during. Pick the larger number. EX: 6&quot;, required = FALSE
   )
 )
 
+# use the prompts and prompted list to clean the data 
+# store in a new data frame table 
 ep_breaks_extracted &lt;- ellmer::parallel_chat_structured(chat, prompts, type = ep_breaks) </code></pre>
 <pre><code>## [working] (4 + 0) -&gt; 10 -&gt; 1 | ■■■ 7%[working] (3 + 0) -&gt; 10 -&gt; 2 | ■■■■■
-## 13%[working] (2 + 0) -&gt; 11 -&gt; 2 | ■■■■■ 13%[working] (0 + 0) -&gt; 11 -&gt; 4 |
-## ■■■■■■■■■ 27%[working] (0 + 0) -&gt; 10 -&gt; 5 | ■■■■■■■■■■■ 33%[working] (0 + 0) -&gt;
-## 6 -&gt; 9 | ■■■■■■■■■■■■■■■■■■■ 60% [working] (0 + 0) -&gt; 4 -&gt; 11 |
-## ■■■■■■■■■■■■■■■■■■■■■■■ 73%[working] (0 + 0) -&gt; 3 -&gt; 12 |
-## ■■■■■■■■■■■■■■■■■■■■■■■■■ 80%[working] (0 + 0) -&gt; 2 -&gt; 13 |
-## ■■■■■■■■■■■■■■■■■■■■■■■■■■■ 87%[working] (0 + 0) -&gt; 1 -&gt; 14 |
-## ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 93%</code></pre>
-<pre class="r"><code>big_table[[3]] |&gt; as.list() -&gt; prompts
+## 13%[working] (2 + 0) -&gt; 11 -&gt; 2 | ■■■■■ 13%[working] (2 + 0) -&gt; 10 -&gt; 3 |
+## ■■■■■■■ 20%[working] (1 + 0) -&gt; 10 -&gt; 4 | ■■■■■■■■■ 27%[working] (0 + 0) -&gt; 10
+## -&gt; 5 | ■■■■■■■■■■■ 33%[working] (0 + 0) -&gt; 8 -&gt; 7 | ■■■■■■■■■■■■■■■ 47%
+## [working] (0 + 0) -&gt; 7 -&gt; 8 | ■■■■■■■■■■■■■■■■■ 53%[working] (0 + 0) -&gt; 6 -&gt; 9
+## | ■■■■■■■■■■■■■■■■■■■ 60%[working] (0 + 0) -&gt; 5 -&gt; 10 | ■■■■■■■■■■■■■■■■■■■■■
+## 67%[working] (0 + 0) -&gt; 3 -&gt; 12 | ■■■■■■■■■■■■■■■■■■■■■■■■■ 80%[working] (0 +
+## 0) -&gt; 1 -&gt; 14 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 93%</code></pre>
+<pre class="r"><code># store the third column of the dataframe as a list in prompts to be used with ellmer below
+# this list will contain information about the breaks per movie
 
-prompts</code></pre>
-<pre><code>## [[1]]
-## [1] &quot;Pre-roll, during&quot;
-## 
-## [[2]]
-## [1] &quot;Pre-roll, 8 breaks during&quot;
-## 
-## [[3]]
-## [1] &quot;Pre-roll, 3 breaks during&quot;
-## 
-## [[4]]
-## [1] &quot;Pre-roll, 3 to4 breaks during&quot;
-## 
-## [[5]]
-## [1] &quot;Pre-roll, 6 to 7 breaks during&quot;
-## 
-## [[6]]
-## [1] &quot;Pre-roll, 6 to 9 breaks during&quot;
-## 
-## [[7]]
-## [1] &quot;8 to 10 breaks during&quot;
-## 
-## [[8]]
-## [1] &quot;1 long pre-roll break&quot;
-## 
-## [[9]]
-## [1] &quot;1 long pre-roll break&quot;
-## 
-## [[10]]
-## [1] &quot;Pre-roll, 5 breaks during&quot;
-## 
-## [[11]]
-## [1] &quot;Pre-roll, 12 breaks during&quot;
-## 
-## [[12]]
-## [1] &quot;1 long pre-roll break or mid-playback break&quot;
-## 
-## [[13]]
-## [1] &quot;Pre-roll, 8 to 11 breaks during&quot;
-## 
-## [[14]]
-## [1] &quot;No pre-roll, 11 breaks during&quot;
-## 
-## [[15]]
-## [1] &quot;Pre-roll, 6 to 8 breaks during&quot;</code></pre>
-<pre class="r"><code>mov_breaks &lt;- ellmer::type_object( #create a type thing (used by ellmer)
-  #time to record what we want to extract specifically 
+big_table[[3]] |&gt; as.list() -&gt; prompts
+
+# prompts for the chat to follow to separate the data into 3 columns: Whether the streaming service has ads during the pre-roll, the minumum number of breaks during a movie, and the maximum number of breaks
+mov_breaks &lt;- ellmer::type_object(
   `Pre-roll breaks per movie` = ellmer::type_string( 
     description = &quot;Extract whether the text contains &#39;Pre-roll&#39; or &#39;No pre-roll&#39;.
 Rules:
@@ -679,7 +713,7 @@ Rules:
 - If both appear, output &#39;Pre-roll&#39;.
 - Ignore all other text.&quot;
   ),
-  `Minimum breaks per movie` = ellmer::type_string( 
+  `Minimum breaks per movie` = ellmer::type_integer( 
     description = &quot;Extract the minimum number of breaks during the movie.
 Rules:
 1. If the text contains &#39;mid-playback break&#39;, set minimum = 0.
@@ -693,7 +727,7 @@ Examples:
 - &#39;1 long pre-roll break or mid-playback break&#39; → 0
 - &#39;Pre-roll, during&#39; → NA&quot;, required = FALSE
   ),
-  `Maximum breaks per movie` = ellmer::type_string( 
+  `Maximum breaks per movie` = ellmer::type_integer( 
     description = &quot;Extract the maximum number of breaks during the movie.
 Rules:
 1. If the text contains &#39;mid-playback break&#39;, set maximum = 1.
@@ -709,66 +743,26 @@ Examples:
   )
 )
 
+# use the prompts and prompted list to clean the data 
+# store in a new data frame table 
 mov_breaks_extracted &lt;- ellmer::parallel_chat_structured(chat, prompts, type = mov_breaks) </code></pre>
 <pre><code>## [working] (4 + 0) -&gt; 10 -&gt; 1 | ■■■ 7%[working] (3 + 0) -&gt; 10 -&gt; 2 | ■■■■■
-## 13%[working] (1 + 0) -&gt; 10 -&gt; 4 | ■■■■■■■■■ 27%[working] (0 + 0) -&gt; 9 -&gt; 6 |
-## ■■■■■■■■■■■■■ 40% [working] (0 + 0) -&gt; 8 -&gt; 7 | ■■■■■■■■■■■■■■■ 47%[working] (0
-## + 0) -&gt; 7 -&gt; 8 | ■■■■■■■■■■■■■■■■■ 53%[working] (0 + 0) -&gt; 6 -&gt; 9 |
+## 13%[working] (2 + 0) -&gt; 10 -&gt; 3 | ■■■■■■■ 20%[working] (1 + 0) -&gt; 10 -&gt; 4 |
+## ■■■■■■■■■ 27%[working] (0 + 0) -&gt; 11 -&gt; 4 | ■■■■■■■■■ 27%[working] (0 + 0) -&gt;
+## 10 -&gt; 5 | ■■■■■■■■■■■ 33%[working] (0 + 0) -&gt; 9 -&gt; 6 | ■■■■■■■■■■■■■ 40%
+## [working] (0 + 0) -&gt; 8 -&gt; 7 | ■■■■■■■■■■■■■■■ 47%[working] (0 + 0) -&gt; 6 -&gt; 9 |
 ## ■■■■■■■■■■■■■■■■■■■ 60%[working] (0 + 0) -&gt; 5 -&gt; 10 | ■■■■■■■■■■■■■■■■■■■■■
 ## 67%[working] (0 + 0) -&gt; 4 -&gt; 11 | ■■■■■■■■■■■■■■■■■■■■■■■ 73%[working] (0 + 0)
-## -&gt; 3 -&gt; 12 | ■■■■■■■■■■■■■■■■■■■■■■■■■ 80%[working] (0 + 0) -&gt; 1 -&gt; 14 |
+## -&gt; 2 -&gt; 13 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■ 87%[working] (0 + 0) -&gt; 1 -&gt; 14 |
 ## ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 93%</code></pre>
-<pre><code>## Warning: 1 request errored.</code></pre>
-<pre class="r"><code>big_table[[4]] |&gt; as.list() -&gt; prompts_tv_len
+<pre class="r"><code># store the fourth column of the dataframe as a list in prompts to be used with ellmer below
+# this list will contain information about the ad break length per episode
+big_table[[4]] |&gt; as.list() -&gt; prompts_tv_len
 
-prompts_tv_len</code></pre>
-<pre><code>## [[1]]
-## [1] &quot;30 to 90 seconds&quot;
-## 
-## [[2]]
-## [1] &quot;75 to 105 seconds&quot;
-## 
-## [[3]]
-## [1] &quot;15 to 90 seconds&quot;
-## 
-## [[4]]
-## [1] &quot;15 to 90 seconds&quot;
-## 
-## [[5]]
-## [1] &quot;60 to 75 seconds&quot;
-## 
-## [[6]]
-## [1] &quot;15 to 90 seconds&quot;
-## 
-## [[7]]
-## [1] &quot;15 to 30 seconds&quot;
-## 
-## [[8]]
-## [1] &quot;60 to 90 seconds&quot;
-## 
-## [[9]]
-## [1] &quot;15 to 90 seconds&quot;
-## 
-## [[10]]
-## [1] &quot;3 minutes&quot;
-## 
-## [[11]]
-## [1] &quot;75 seconds&quot;
-## 
-## [[12]]
-## [1] &quot;15 seconds to 120 seconds&quot;
-## 
-## [[13]]
-## [1] &quot;45 to 60 seconds&quot;
-## 
-## [[14]]
-## [1] &quot;105 seconds&quot;
-## 
-## [[15]]
-## [1] &quot;90 seconds&quot;</code></pre>
-<pre class="r"><code>ad_break_length_tv &lt;- ellmer::type_object( #create a type thing (used by ellmer)
-  #time to record what we want to extract specifically 
-  `Minimum Ad break length per TV show (seconds)` = ellmer::type_string( 
+
+# prompts for the chat to follow to separate the data into 2 columns: the minimum length of breaks during an episode, and the maximum length in seconds
+ad_break_length_tv &lt;- ellmer::type_object( 
+  `Minimum Ad break length per TV show (seconds)` = ellmer::type_integer( 
     description = &quot;Extract the minimum length of ads in seconds.
 Rules:
 1. If the text contains a numeric range &#39;X to Y seconds&#39;, set minimum = X.
@@ -779,7 +773,7 @@ Examples:
 - &#39;3 minutes&#39; → 180
 - &#39;75 seconds&#39; → 75&quot;
   ),
-  `Maximum Ad break length per TV show (seconds)` = ellmer::type_string( 
+  `Maximum Ad break length per TV show (seconds)` = ellmer::type_integer( 
     description = &quot;Extract the maximum length of ads in seconds.
 Rules:
 1. If the text contains a numeric range &#39;X to Y seconds&#39;, set maximum = Y.
@@ -792,64 +786,23 @@ Examples:
   )
 )
 
+# use the prompts and prompted list to clean the data 
+# store in a new data frame table 
 ad_length_tv_extracted &lt;- ellmer::parallel_chat_structured(chat, prompts_tv_len, type = ad_break_length_tv) </code></pre>
-<pre><code>## [working] (4 + 0) -&gt; 10 -&gt; 1 | ■■■ 7%[working] (3 + 0) -&gt; 11 -&gt; 1 | ■■■
-## 7%[working] (3 + 0) -&gt; 10 -&gt; 2 | ■■■■■ 13%[working] (1 + 0) -&gt; 10 -&gt; 4 |
-## ■■■■■■■■■ 27%[working] (0 + 0) -&gt; 11 -&gt; 4 | ■■■■■■■■■ 27%[working] (0 + 0) -&gt; 7
-## -&gt; 8 | ■■■■■■■■■■■■■■■■■ 53% [working] (0 + 0) -&gt; 6 -&gt; 9 | ■■■■■■■■■■■■■■■■■■■
-## 60%[working] (0 + 0) -&gt; 5 -&gt; 10 | ■■■■■■■■■■■■■■■■■■■■■ 67%[working] (0 + 0) -&gt;
-## 4 -&gt; 11 | ■■■■■■■■■■■■■■■■■■■■■■■ 73%[working] (0 + 0) -&gt; 2 -&gt; 13 |
-## ■■■■■■■■■■■■■■■■■■■■■■■■■■■ 87%</code></pre>
-<pre class="r"><code>big_table[[5]] |&gt; as.list() -&gt; prompts_mov_len
+<pre><code>## [working] (4 + 0) -&gt; 10 -&gt; 1 | ■■■ 7%[working] (1 + 0) -&gt; 10 -&gt; 4 | ■■■■■■■■■
+## 27%[working] (0 + 0) -&gt; 9 -&gt; 6 | ■■■■■■■■■■■■■ 40% [working] (0 + 0) -&gt; 6 -&gt; 9
+## | ■■■■■■■■■■■■■■■■■■■ 60%[working] (0 + 0) -&gt; 5 -&gt; 10 | ■■■■■■■■■■■■■■■■■■■■■
+## 67%[working] (0 + 0) -&gt; 4 -&gt; 11 | ■■■■■■■■■■■■■■■■■■■■■■■ 73%[working] (0 + 0)
+## -&gt; 3 -&gt; 12 | ■■■■■■■■■■■■■■■■■■■■■■■■■ 80%[working] (0 + 0) -&gt; 2 -&gt; 13 |
+## ■■■■■■■■■■■■■■■■■■■■■■■■■■■ 87%[working] (0 + 0) -&gt; 1 -&gt; 14 |
+## ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 93%</code></pre>
+<pre class="r"><code># store the fifth column of the dataframe as a list in prompts to be used with ellmer below
+# this list will contain information about the ad break length during a movie
+big_table[[5]] |&gt; as.list() -&gt; prompts_mov_len
 
-prompts_mov_len</code></pre>
-<pre><code>## [[1]]
-## [1] &quot;30 to 60 seconds&quot;
-## 
-## [[2]]
-## [1] &quot;75 to 105 seconds&quot;
-## 
-## [[3]]
-## [1] &quot;15 to 105 seconds&quot;
-## 
-## [[4]]
-## [1] &quot;90 to 120 seconds&quot;
-## 
-## [[5]]
-## [1] &quot;30 to 75 seconds&quot;
-## 
-## [[6]]
-## [1] &quot;60 to 90 seconds&quot;
-## 
-## [[7]]
-## [1] &quot;15 to 30 seconds&quot;
-## 
-## [[8]]
-## [1] &quot;3 minutes&quot;
-## 
-## [[9]]
-## [1] &quot;3 minutes&quot;
-## 
-## [[10]]
-## [1] &quot;3 minutes&quot;
-## 
-## [[11]]
-## [1] &quot;90 seconds&quot;
-## 
-## [[12]]
-## [1] &quot;2 minutes, 15 seconds&quot;
-## 
-## [[13]]
-## [1] &quot;45 to 60 seconds&quot;
-## 
-## [[14]]
-## [1] &quot;90 seconds&quot;
-## 
-## [[15]]
-## [1] &quot;90 seconds&quot;</code></pre>
-<pre class="r"><code>ad_break_length_mov &lt;- ellmer::type_object( #create a type thing (used by ellmer)
-  #time to record what we want to extract specifically 
-  `Minimum Ad break length per movie (seconds)` = ellmer::type_string( 
+# prompts for the chat to follow to separate the data into 2 columns: the minimum length of breaks during a movie, and the maximum length in seconds
+ad_break_length_mov &lt;- ellmer::type_object( 
+  `Minimum Ad break length per movie (seconds)` = ellmer::type_integer( 
     description = &quot;Extract the minimum length of ads in seconds.
 Rules:
 1. If the text contains a numeric range &#39;X to Y seconds&#39;, set minimum = X.
@@ -863,7 +816,7 @@ Examples:
 - &#39;2 minutes, 15 seconds&#39; → 135
 &quot;
   ),
-  `Maximum Ad break length per movie (seconds)` = ellmer::type_string( 
+  `Maximum Ad break length per movie (seconds)` = ellmer::type_integer( 
     description = &quot;Extract the maximum length of ads in seconds.
 Rules:
 1. If the text contains a numeric range &#39;X to Y seconds&#39;, set maximum = Y.
@@ -879,18 +832,23 @@ Examples:
   )
 )
 
+# use the prompts and prompted list to clean the data 
+# store in a new data frame table 
 ad_length_mov_extracted &lt;- ellmer::parallel_chat_structured(chat, prompts_mov_len, type = ad_break_length_mov) </code></pre>
-<pre><code>## [working] (4 + 0) -&gt; 11 -&gt; 0 | ■ 0%[working] (4 + 0) -&gt; 10 -&gt; 1 | ■■■
-## 7%[working] (3 + 0) -&gt; 11 -&gt; 1 | ■■■ 7%[working] (2 + 0) -&gt; 10 -&gt; 3 | ■■■■■■■
-## 20%[working] (1 + 0) -&gt; 11 -&gt; 3 | ■■■■■■■ 20%[working] (0 + 0) -&gt; 5 -&gt; 10 |
-## ■■■■■■■■■■■■■■■■■■■■■ 67%[working] (0 + 0) -&gt; 4 -&gt; 11 | ■■■■■■■■■■■■■■■■■■■■■■■
-## 73%[working] (0 + 0) -&gt; 3 -&gt; 12 | ■■■■■■■■■■■■■■■■■■■■■■■■■ 80%[working] (0 +
-## 0) -&gt; 2 -&gt; 13 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■ 87%[working] (0 + 0) -&gt; 1 -&gt; 14 |
-## ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 93%</code></pre>
-<pre class="r"><code>big_table[[6]] |&gt; as.list() -&gt; prompts_title_tv
+<pre><code>## [working] (4 + 0) -&gt; 10 -&gt; 1 | ■■■ 7%[working] (3 + 0) -&gt; 10 -&gt; 2 | ■■■■■
+## 13%[working] (0 + 0) -&gt; 11 -&gt; 4 | ■■■■■■■■■ 27%[working] (0 + 0) -&gt; 8 -&gt; 7 |
+## ■■■■■■■■■■■■■■■ 47% [working] (0 + 0) -&gt; 7 -&gt; 8 | ■■■■■■■■■■■■■■■■■
+## 53%[working] (0 + 0) -&gt; 5 -&gt; 10 | ■■■■■■■■■■■■■■■■■■■■■ 67%[working] (0 + 0) -&gt;
+## 3 -&gt; 12 | ■■■■■■■■■■■■■■■■■■■■■■■■■ 80%[working] (0 + 0) -&gt; 2 -&gt; 13 |
+## ■■■■■■■■■■■■■■■■■■■■■■■■■■■ 87%</code></pre>
+<pre class="r"><code># store the sixth column of the dataframe as a list in prompts to be used with ellmer below
+# this list will contain information about the length of all ads during an episode
+big_table[[6]] |&gt; as.list() -&gt; prompts_title_tv
 
+
+# prompts for the chat to follow to separate the data into 2 columns: the minimum length of ads during an episode, and the maximum length in minutes 
 ad_title_tv &lt;- ellmer::type_object( 
-  `Minimum Ads per TV episode (minutes)` = ellmer::type_string( 
+  `Minimum Ads per TV episode (minutes)` = ellmer::type_integer( 
     description = &quot;Extract the minimum ad length in minutes
 Rules:
 1. If the text contains a numeric range &#39;X to Y minutes&#39;, set minimum = X.
@@ -899,7 +857,7 @@ Examples:
 - &#39;2 to 5 minutes&#39; → 2
 &quot;
   ),
-  `Maximum Ads per TV episode (minutes)` = ellmer::type_string( 
+  `Maximum Ads per TV episode (minutes)` = ellmer::type_integer( 
     description = &quot;Extract the maximum ad length in minutes
 Rules:
 1. If the text contains a numeric range &#39;X to Y minutes&#39;, set maximum = Y.
@@ -910,17 +868,24 @@ Examples:
   )
 )
 
+# use the prompts and prompted list to clean the data 
+# store in a new data frame table 
 ad_title_tv_extracted &lt;- ellmer::parallel_chat_structured(chat, prompts_title_tv, type = ad_title_tv) </code></pre>
-<pre><code>## [working] (4 + 0) -&gt; 11 -&gt; 0 | ■ 0%[working] (4 + 0) -&gt; 10 -&gt; 1 | ■■■
-## 7%[working] (1 + 0) -&gt; 11 -&gt; 3 | ■■■■■■■ 20%[working] (0 + 0) -&gt; 11 -&gt; 4 |
-## ■■■■■■■■■ 27%[working] (0 + 0) -&gt; 8 -&gt; 7 | ■■■■■■■■■■■■■■■ 47% [working] (0 +
-## 0) -&gt; 7 -&gt; 8 | ■■■■■■■■■■■■■■■■■ 53%[working] (0 + 0) -&gt; 5 -&gt; 10 |
-## ■■■■■■■■■■■■■■■■■■■■■ 67%[working] (0 + 0) -&gt; 4 -&gt; 11 | ■■■■■■■■■■■■■■■■■■■■■■■
-## 73%[working] (0 + 0) -&gt; 2 -&gt; 13 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■ 87%</code></pre>
-<pre class="r"><code>big_table[[7]] |&gt; as.list() -&gt; prompts_title_mov
+<pre><code>## [working] (4 + 0) -&gt; 10 -&gt; 1 | ■■■ 7%[working] (2 + 0) -&gt; 10 -&gt; 3 | ■■■■■■■
+## 20%[working] (0 + 0) -&gt; 9 -&gt; 6 | ■■■■■■■■■■■■■ 40% [working] (0 + 0) -&gt; 7 -&gt; 8
+## | ■■■■■■■■■■■■■■■■■ 53%[working] (0 + 0) -&gt; 5 -&gt; 10 | ■■■■■■■■■■■■■■■■■■■■■
+## 67%[working] (0 + 0) -&gt; 4 -&gt; 11 | ■■■■■■■■■■■■■■■■■■■■■■■ 73%[working] (0 + 0)
+## -&gt; 3 -&gt; 12 | ■■■■■■■■■■■■■■■■■■■■■■■■■ 80%[working] (0 + 0) -&gt; 2 -&gt; 13 |
+## ■■■■■■■■■■■■■■■■■■■■■■■■■■■ 87%[working] (0 + 0) -&gt; 1 -&gt; 14 |
+## ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 93%</code></pre>
+<pre class="r"><code># store the sixth column of the dataframe as a list in prompts to be used with ellmer below
+# this list will contain information about the length of all ads during a movie
+big_table[[7]] |&gt; as.list() -&gt; prompts_title_mov
 
+
+# prompts for the chat to follow to separate the data into 2 columns: the minimum length of ads during a movie, and the maximum length in minutes  
 ad_title_mov &lt;- ellmer::type_object( 
-  `Minimum Ads per movie (minutes)` = ellmer::type_string( 
+  `Minimum Ads per movie (minutes)` = ellmer::type_integer( 
     description = &quot;Extract the minimum ad length in minutes
 Rules:
 1. If the text contains a numeric range &#39;X to Y minutes&#39;, set minimum = X.
@@ -930,7 +895,7 @@ Examples:
 - &#39;2 to 5 minutes&#39; → 2
 &quot;
   ),
-  `Maximum Ads per movie (minutes)` = ellmer::type_string( 
+  `Maximum Ads per movie (minutes)` = ellmer::type_integer( 
     description = &quot;Extract the maximum ad length in minutes
 Rules:
 1. If the text contains a numeric range &#39;X to Y minutes&#39;, set maximum = Y.
@@ -942,39 +907,48 @@ Examples:
   )
 )
 
+# store the sixth column of the dataframe as a list in prompts to be used with ellmer below
+# this list will contain information about the length of all ads during a movie
 ad_title_mov_extracted &lt;- ellmer::parallel_chat_structured(chat, prompts_title_mov, type = ad_title_mov) </code></pre>
-<pre><code>## [working] (5 + 0) -&gt; 10 -&gt; 0 | ■ 0%[working] (4 + 0) -&gt; 10 -&gt; 1 | ■■■
-## 7%[working] (3 + 0) -&gt; 11 -&gt; 1 | ■■■ 7%[working] (2 + 0) -&gt; 11 -&gt; 2 | ■■■■■
-## 13%[working] (1 + 0) -&gt; 11 -&gt; 3 | ■■■■■■■ 20%[working] (1 + 0) -&gt; 10 -&gt; 4 |
-## ■■■■■■■■■ 27%[working] (0 + 0) -&gt; 10 -&gt; 5 | ■■■■■■■■■■■ 33%[working] (0 + 0) -&gt;
-## 9 -&gt; 6 | ■■■■■■■■■■■■■ 40% [working] (0 + 0) -&gt; 6 -&gt; 9 | ■■■■■■■■■■■■■■■■■■■
-## 60%[working] (0 + 0) -&gt; 5 -&gt; 10 | ■■■■■■■■■■■■■■■■■■■■■ 67%[working] (0 + 0) -&gt;
-## 4 -&gt; 11 | ■■■■■■■■■■■■■■■■■■■■■■■ 73%[working] (0 + 0) -&gt; 2 -&gt; 13 |
+<pre><code>## [working] (4 + 0) -&gt; 10 -&gt; 1 | ■■■ 7%[working] (2 + 0) -&gt; 10 -&gt; 3 | ■■■■■■■
+## 20%[working] (0 + 0) -&gt; 10 -&gt; 5 | ■■■■■■■■■■■ 33%[working] (0 + 0) -&gt; 8 -&gt; 7 |
+## ■■■■■■■■■■■■■■■ 47% [working] (0 + 0) -&gt; 5 -&gt; 10 | ■■■■■■■■■■■■■■■■■■■■■
+## 67%[working] (0 + 0) -&gt; 4 -&gt; 11 | ■■■■■■■■■■■■■■■■■■■■■■■ 73%[working] (0 + 0)
+## -&gt; 3 -&gt; 12 | ■■■■■■■■■■■■■■■■■■■■■■■■■ 80%[working] (0 + 0) -&gt; 2 -&gt; 13 |
 ## ■■■■■■■■■■■■■■■■■■■■■■■■■■■ 87%[working] (0 + 0) -&gt; 1 -&gt; 14 |
 ## ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 93%</code></pre>
-<pre class="r"><code>robotstxt::paths_allowed(
-  paths = &quot;resources/most-watched-streaming-service-q4-2025&quot;, #The first path after the domain that we want to access
+<pre class="r"><code># combine all of the extracted dataframes into one large table
+platform_extraction &lt;- bind_cols(big_table[1], ad_title_mov_extracted, ad_title_tv_extracted, ad_length_mov_extracted, ad_length_tv_extracted, mov_breaks_extracted, ep_breaks_extracted)</code></pre>
+</div>
+<div id="scraping-share-of-total-u.s.-tv-viewing-and-household-data-from-adwave" class="section level2">
+<h2>Scraping Share of total U.S. TV viewing and household data from
+Adwave</h2>
+<pre class="r"><code># Verify that the Adwave site allows web scraping for the path we wish to scrape
+# A TRUE result allows web scraping
+robotstxt::paths_allowed(
+  paths = &quot;resources/most-watched-streaming-service-q4-2025&quot;, 
   domain = &quot;https://adwave.com&quot;
   
 )</code></pre>
 <pre><code>##  https://adwave.com</code></pre>
 <pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>adwave_webpage &lt;- rvest::read_html(&quot;https://adwave.com/resources/most-watched-streaming-service-q4-2025&quot;)
+<pre class="r"><code># read the html into a variable
+adwave_webpage &lt;- rvest::read_html(&quot;https://adwave.com/resources/most-watched-streaming-service-q4-2025&quot;)
 
+# using the saved html, find the text related to the streaming data
 adwave_webpage |&gt;
   rvest::html_elements(&quot;ul &gt; li &gt; p &gt; b&quot;) |&gt;
   rvest::html_text() -&gt; streaming
 
-streaming &lt;- streaming[1:9]
 
-streaming</code></pre>
-<pre><code>## [1] &quot;YouTube: 12.7%&quot;            &quot;Netflix: 9.0%&quot;            
-## [3] &quot;Disney (combined): 4.7%&quot;   &quot;Prime Video: 4.3%&quot;        
-## [5] &quot;Roku Channel: 3.0%&quot;        &quot;Paramount Streaming: 2.5%&quot;
-## [7] &quot;Tubi: 2.0%&quot;                &quot;Max: 1.8%&quot;                
-## [9] &quot;Peacock: 1.7%&quot;</code></pre>
-<pre class="r"><code>streaming |&gt; as.list() -&gt; prompt_view_share
+# select only the data related to market share
+streaming_mkt &lt;- streaming[1:9]
 
+
+# convert the data into a list to be used by the AI
+streaming_mkt |&gt; as.list() -&gt; prompt_view_share
+
+# generate prompting to clean the data into two columns: the platform name and the share written in decimal form
 US_view_share &lt;- ellmer::type_object( 
   `Platform` = ellmer::type_string( 
     description = &quot;The streaming platform name.
@@ -988,7 +962,7 @@ Examples:
 - &#39;Prime Video: 4.3%&#39; → Prime Video
 &quot;
   ),
-  `Share of total U.S. TV viewing (%)` = ellmer::type_string( 
+  `Share of total U.S. TV viewing (%)` = ellmer::type_number( 
     description = &quot;Extract the share of total tv viewing.
 Rules:
 1. If the text contains a numeric value &#39;2.5%&#39;, set viewing = 0.025.
@@ -1000,16 +974,19 @@ Examples:
   )
 )
 
+# clean the data and save as a dataframe
 TV_viewing_share &lt;- ellmer::parallel_chat_structured(chat, prompt_view_share, type = US_view_share) </code></pre>
 <pre><code>## [working] (0 + 0) -&gt; 8 -&gt; 1 | ■■■■ 11%[working] (0 + 0) -&gt; 7 -&gt; 2 | ■■■■■■■■
 ## 22%[working] (0 + 0) -&gt; 5 -&gt; 4 | ■■■■■■■■■■■■■■ 44%[working] (0 + 0) -&gt; 3 -&gt; 6
 ## | ■■■■■■■■■■■■■■■■■■■■■ 67%[working] (0 + 0) -&gt; 1 -&gt; 8 |
 ## ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 89%</code></pre>
-<pre><code>## Warning: Found 2 JSON responses, using the first.</code></pre>
-<pre class="r"><code>household &lt;- streaming[20:24]
+<pre class="r"><code>#select only the data related to households
+household &lt;- streaming[20:24]
 
+# convert the data into a list to be used by the AI
 household |&gt; as.list() -&gt; prompt_households
 
+# generate prompting to clean the data and seperate into two columns: the platform name and the household penetration
 household_reach_percent &lt;- ellmer::type_object( 
   `Platform` = ellmer::type_string( 
     description = &quot;The streaming platform name.
@@ -1027,36 +1004,59 @@ Examples:
   )
 )
 
-
+# clean the data and save as a dataframe
 household_reach &lt;- ellmer::parallel_chat_structured(chat, prompt_households, type = household_reach_percent) </code></pre>
 <pre><code>## [working] (0 + 0) -&gt; 4 -&gt; 1 | ■■■■■■■ 20%[working] (0 + 0) -&gt; 3 -&gt; 2 |
-## ■■■■■■■■■■■■■ 40%</code></pre>
-<pre class="r"><code>global_sub_webpage &lt;- rvest::read_html(&quot;https://electroiq.com/stats/streaming-services-statistics/&quot;)
+## ■■■■■■■■■■■■■ 40%[working] (0 + 0) -&gt; 2 -&gt; 3 | ■■■■■■■■■■■■■■■■■■■ 60%[working]
+## (0 + 0) -&gt; 1 -&gt; 4 | ■■■■■■■■■■■■■■■■■■■■■■■■■ 80%</code></pre>
+</div>
+<div id="scraping-global-subscription-data-from-electroiq" class="section level2">
+<h2>Scraping global subscription data from ElectroIQ</h2>
+<pre class="r"><code># Verify that the Adwave site allows web scraping for the path we wish to scrape
+# A TRUE result allows web scraping
+robotstxt::paths_allowed(
+  paths = &quot;/stats/streaming-services-statistics/&quot;, 
+  domain = &quot;https://electroiq.com&quot;
+  
+)</code></pre>
+<pre><code>##  https://electroiq.com</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># read the html into a variable
+global_sub_webpage &lt;- rvest::read_html(&quot;https://electroiq.com/stats/streaming-services-statistics/&quot;)
 
+# use the saved html to select the tables on the page
 global_sub_webpage |&gt;
   rvest::html_elements(&quot;table&quot;) |&gt;
   rvest::html_table() -&gt; streaming_2
 
+# streaming_2 contains 4 tibbles, one from each table on the site
+# select the second to get information about the subscribers 
 global_subs &lt;- streaming_2[[2]]
+# remove the columns related to Origin Country, Launch Year, and Served Country/Region
 global_subs &lt;- global_subs |&gt; select(-c(X2,X3,X5))
+# use the first row as the column names and remove the first row to include only the data in the dataframe 
 colnames(global_subs) &lt;- global_subs[1,]
 global_subs &lt;- global_subs[-1,]
 
+# Select only the first 18 rows as these contain the most popular streaming sites
 global_subs &lt;- global_subs[1:18,]
 
+# remove the &quot;million&quot; from the subscribers column and convert the values into decimals
 global_subs$Subscribers &lt;- as.numeric(gsub(&quot; million&quot;, &quot;&quot;, global_subs$Subscribers))
 
+# rename the columns to be more descriptive and match other dataframes
 global_subs &lt;- global_subs |&gt; rename(&quot;Platform&quot; = &quot;Service Name&quot;)
 global_subs &lt;- global_subs |&gt; rename(&quot;Subscribers (Millions)&quot; = &quot;Subscribers&quot;)</code></pre>
-<pre class="r"><code>platform_extraction &lt;- bind_cols(big_table[1], ad_title_mov_extracted, ad_title_tv_extracted, ad_length_mov_extracted, ad_length_tv_extracted, mov_breaks_extracted, ep_breaks_extracted)
-
-# Clean the data by relabeling streaming services that do not follow the traditional naming convention. 
+</div>
+<div id="final-cleaning-and-merging-dataframes-to-create-the-final-dataset" class="section level2">
+<h2>Final Cleaning and Merging Dataframes to Create the Final
+Dataset</h2>
+<pre class="r"><code># Clean the data by relabeling streaming services that do not follow the traditional naming convention. 
 # Rename to HBO Max
 ott[5, &quot;Platform&quot;] &lt;- &quot;HBO Max&quot;
 platform_extraction[5, &quot;Platform&quot;] &lt;- &quot;HBO Max&quot;
 TV_viewing_share[8, &quot;Platform&quot;] &lt;- &quot;HBO Max&quot;
 watch_time[5, &quot;Platform&quot;] &lt;- &quot;HBO Max&quot;
-revenue[1, &quot;Platform&quot;] &lt;- &quot;HBO Max&quot;
 
 # Rename to Hulu TV
 ott[11, &quot;Platform&quot;] &lt;- &quot;Hulu TV&quot;
@@ -1076,6 +1076,10 @@ platform_extraction[2, &quot;Platform&quot;] &lt;- &quot;Discovery+&quot;
 # Rename to Paramount+
 global_subs[13, &quot;Platform&quot;] &lt;- &quot;Paramount+&quot;
 
+
+
+
+# Join each dataframe into one large dataframe by matching rows with the same Platform name
 master_set &lt;- revenue |&gt;
   full_join(ott,      by = &quot;Platform&quot;) |&gt;
   full_join(ad_spend, by = &quot;Platform&quot;) |&gt;
@@ -1084,64 +1088,12 @@ master_set &lt;- revenue |&gt;
   full_join(global_subs, by = &quot;Platform&quot;) |&gt;
   full_join(TV_viewing_share,     by = &quot;Platform&quot;) |&gt; 
   full_join(platform_extraction,     by = &quot;Platform&quot;) |&gt; 
-  full_join(watch_time,     by = &quot;Platform&quot;)
-
-names(master_set)</code></pre>
-<pre><code>##  [1] &quot;Platform&quot;                                       
-##  [2] &quot;Revenue (Millions)&quot;                             
-##  [3] &quot;Subscription OTT Video Viewers (Millions)&quot;      
-##  [4] &quot;2024 Ad Spending (Millions)&quot;                    
-##  [5] &quot;2025 Ad Spending (Millions)&quot;                    
-##  [6] &quot;Ad Spending % Change&quot;                           
-##  [7] &quot;Compound Annual Growth Rate (CAGR) (%)&quot;         
-##  [8] &quot;U.S. household penetration (% of US households)&quot;
-##  [9] &quot;Subscribers (Millions)&quot;                         
-## [10] &quot;Share of total U.S. TV viewing (%)&quot;             
-## [11] &quot;Minimum Ads per movie (minutes)&quot;                
-## [12] &quot;Maximum Ads per movie (minutes)&quot;                
-## [13] &quot;Minimum Ads per TV episode (minutes)&quot;           
-## [14] &quot;Maximum Ads per TV episode (minutes)&quot;           
-## [15] &quot;Minimum Ad break length per movie (seconds)&quot;    
-## [16] &quot;Maximum Ad break length per movie (seconds)&quot;    
-## [17] &quot;Minimum Ad break length per TV show (seconds)&quot;  
-## [18] &quot;Maximum Ad break length per TV show (seconds)&quot;  
-## [19] &quot;Pre-roll breaks per movie&quot;                      
-## [20] &quot;Minimum breaks per movie&quot;                       
-## [21] &quot;Maximum breaks per movie&quot;                       
-## [22] &quot;.error&quot;                                         
-## [23] &quot;Pre-roll breaks per 30 min episode&quot;             
-## [24] &quot;Minimum breaks per 30 min episode&quot;              
-## [25] &quot;Maximum breaks per 30 min episode&quot;              
-## [26] &quot;Active Users Average Daily Watch Time (minutes)&quot;
-## [27] &quot;Total Adults Average Daily Watch Time (minutes)&quot;</code></pre>
-<pre class="r"><code># 
-# master_set &lt;- master_set %&gt;%
-#   mutate(across(-c(Platform, `Pre-roll breaks per movie`,`Pre-roll breaks per 30 min episode`), as.numeric))
-
-master_set</code></pre>
-<pre><code>## # A tibble: 38 × 27
-##    Platform   `Revenue (Millions)` Subscription OTT Vid…¹ 2024 Ad Spending (Mi…²
-##    &lt;chr&gt;                     &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;int&gt;
-##  1 HBO Max                   244.                    89                      961
-##  2 Disney+                   220                    117.                    1131
-##  3 Peacock                   146.                    87.9                   1579
-##  4 Hulu                      145                    123.                    4386
-##  5 Paramount+                122.                    86.7                   1205
-##  6 Crunchyro…                 91.4                   NA                       NA
-##  7 Amazon Pr…                 41.3                  163                       NA
-##  8 Netflix                    38.4                  184.                     932
-##  9 STARZ                      40                     NA                       NA
-## 10 The Zeus …                 25.5                   NA                       NA
-## # ℹ 28 more rows
-## # ℹ abbreviated names: ¹​`Subscription OTT Video Viewers (Millions)`,
-## #   ²​`2024 Ad Spending (Millions)`
-## # ℹ 23 more variables: `2025 Ad Spending (Millions)` &lt;int&gt;,
-## #   `Ad Spending % Change` &lt;dbl&gt;,
-## #   `Compound Annual Growth Rate (CAGR) (%)` &lt;dbl&gt;,
-## #   `U.S. household penetration (% of US households)` &lt;chr&gt;, …</code></pre>
-<pre class="r"><code>library(readr)
-
-write_csv(master_set, &quot;C:\\Users\\rylee\\OneDrive\\Desktop\\401_data.csv&quot;)</code></pre>
+  full_join(watch_time,     by = &quot;Platform&quot;)</code></pre>
+</div>
+<div id="write-the-final-dataset-into-a-csv-file" class="section level2">
+<h2>Write the final dataset into a csv file</h2>
+<pre class="r"><code>write_csv(master_set, &quot;C:\\Users\\rylee\\OneDrive\\Desktop\\401_data.csv&quot;)</code></pre>
+</div>
 </div>
 
 
