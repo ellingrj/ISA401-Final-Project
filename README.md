@@ -17,10 +17,14 @@ The dataset integrates metrics from industry reports, market research firms, and
 Data used:
 - Estimated 2022 revenue for major streaming platforms.
 
+
+
 [Brandience – Why Video Streaming Ads Are the Next Big Opportunity for Digital Marketers](https://brandience.com/insights/why-video-streaming-ads-are-the-next-big-opportunity-for-digital-marketers)
 
 Data used:
 - Estimated number of U.S. subscription OTT video viewers.
+
+
 
 [AdTechRadar – Hulu, Amazon, Peacock Top Streaming Ad Spend Rankings; Table from EMARKETER Top 10 US Streaming TV Platforms, Ranked by Ad Spending, 2024 & 2025](https://adtechradar.com/2026/04/07/streaming-ad-spend-hulu-netflix-peacock-emarketer/)
 
@@ -29,10 +33,14 @@ Data used:
 - 2025 ad spending by platform.
 - Year‑over‑year ad spending percentage change.
 
+
+
 [Statista – Video Streaming Services Ad Revenue Growth USA (2023–2027)](https://www.statista.com/statistics/1346476/video-streaming-ad-revenue-growth-usa/)
 
 Data used:
 - Projected compound annual growth rate (CAGR) for ad‑supported streaming services.
+
+
 
 [AdWave – Which Streaming Service Has the Most Viewers? (Q4 2025)](https://adwave.com/resources/most-watched-streaming-service-q4-2025)
 
@@ -40,10 +48,14 @@ Data used:
 - U.S. household penetration by platform.
 - Share of total U.S. TV viewing.
 
+
+
 [ElectroIQ – Streaming Services Statistics](https://electroiq.com/stats/streaming-services-statistics/)
 
 Data used:
 - Total global paid subscribers for each streaming service.
+
+
 
 [The Streamable - Which streaming services are best, worst when it comes to ads?](https://thestreamable.com/how-many-ads-does-each-streaming-service-show)
 
@@ -53,11 +65,15 @@ Data used:
 - Presence of pre‑roll ads (movies and 30‑minute episodes).
 - Minimum and maximum number of ad breaks (movies and 30‑minute episodes).
 
+
+
 [Statista – Average Daily Time Watching Selected Video Streaming Services in the U.S. (2025)](https://www.statista.com/statistics/1610005/daily-time-spent-video-streaming/)
 
 Data used:
 - Average daily watch time for active users.
 - Average daily watch time for all U.S. adults.
+
+
 
 # Project Workflow
 
