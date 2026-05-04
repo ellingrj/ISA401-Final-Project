@@ -1,0 +1,36 @@
+Platform,2022 Revenue (billions),Subscription OTT Video Viewers (Millions),2024 Ad Spending (Millions),2025 Ad Spending (Millions),Ad Spending % Change,Compound Annual Growth Rate (CAGR) (%),U.S. household penetration (% of US households),Subscribers (Millions),Share of total U.S. TV viewing (%),Minimum Ads per movie (minutes),Maximum Ads per movie (minutes),Minimum Ads per TV episode (minutes),Maximum Ads per TV episode (minutes),Minimum Ad break length per movie (seconds),Maximum Ad break length per movie (seconds),Minimum Ad break length per TV show (seconds),Maximum Ad break length per TV show (seconds),Pre-roll breaks per movie,Minimum breaks per movie,Maximum breaks per movie,Pre-roll breaks per 30 min episode,Minimum breaks per 30 min episode,Maximum breaks per 30 min episode,Active Users Average Daily Watch Time (minutes),Total Adults Average Daily Watch Time (minutes)
+Sling TV,31.6,5.4,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+fuboTV Inc.,17.5,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Crunchyroll,13.5,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Peacock,13.2,87.9,1579,1911,0.21,0.15,NA,41,0.017,3,6,3,7,180,180,15,90,Pre-roll,0,0,1 long pre-roll (before episode); no mid-roll,0,0,15,5
+DIRECTV Stream,8,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+YouTube TV,5.7,21.4,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Starz,3,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+ESPN+,2.6,43.2,NA,NA,NA,NA,NA,24.1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Apple TV+,1.9,44.8,NA,NA,NA,NA,NA,45,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Hulu,1.8,123.4,4386,4690,0.07,0.18,0.36,55.5,NA,5,7,5,8,90,120,15,90,Pre-roll,3,4,Pre-roll,3,4,36,16
+Paramount+,1.7,86.7,1205,1395,0.16,0.25,NA,79,0.025,3,3,5,8,180,180,60,90,Pre-roll,0,0,1 long pre-roll break,1,1,NA,NA
+Netflix,1.5,184.2,932,1171,0.26,0.59,0.72,301.6,0.09,3,5,1,2,15,30,15,30,NA,8,10,Unknown,8,10,63,36
+Amazon Prime Video,1.2,163,NA,3039,NA,NA,0.67,205,0.043,1,5,3,5,135,135,15,120,Pre-roll,0,1,1 long pre-roll or mid-playback break,1,1,23,13
+Disney+,1,117.1,1131,1259,0.11,0.37,0.34,127.8,NA,5,5,3,10,15,105,15,90,Pre-roll,3,3,Pre-roll,3,3,26,9
+HBO Max,1,89,961,1166,0.21,NA,NA,122.3,0.018,5,8,3,5,30,75,60,75,Pre-roll,6,7,Pre-roll,6,7,16,5
+Hulu TV,NA,11.4,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Pluto TV,NA,NA,1199,1271,0.06,NA,NA,NA,NA,20,30,4,15,90,90,75,75,Pre-roll,12,12,"Yes, pre-roll",12,12,NA,NA
+Tubi,NA,NA,881,1050,0.19,NA,NA,NA,0.02,8,12,4,6,90,90,90,90,Pre-roll,6,8,Pre-roll,6,8,NA,NA
+Discovery+,NA,NA,361,NA,NA,NA,NA,122.3,NA,5,8,4,5,75,105,75,105,Pre-roll,8,8,Includes pre-roll,8,8,NA,NA
+Warner Bros. Discovery,NA,NA,NA,NA,NA,0.17,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+YouTube,NA,NA,NA,NA,NA,NA,0.68,NA,0.127,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+JioHotstar,NA,NA,NA,NA,NA,NA,NA,280,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+iQIYI,NA,NA,NA,NA,NA,NA,NA,128.9,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+YouTube Premium,NA,NA,NA,NA,NA,NA,NA,125,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Tencent Video,NA,NA,NA,NA,NA,NA,NA,120,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Youku,NA,NA,NA,NA,NA,NA,NA,90,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+MangoTV,NA,NA,NA,NA,NA,NA,NA,73.31,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Vidio,NA,NA,NA,NA,NA,NA,NA,60,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+ZEE5,NA,NA,NA,NA,NA,NA,NA,48,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Disney+ and Hulu,NA,NA,NA,NA,NA,NA,NA,NA,0.047,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Roku Channel,NA,NA,NA,NA,NA,NA,NA,NA,0.03,15,20,2,5,90,90,105,105,No pre-roll,11,11,No pre-roll,11,11,NA,NA
+AMC+,NA,NA,NA,NA,NA,NA,NA,NA,NA,10,15,2,10,30,60,30,90,Pre-roll,NA,NA,Often present but varies by provider and content — many ad-supported tiers include a short pre-roll (0–1).,0,6,NA,NA
+MyFree DIRECTV,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,12,4,10,60,90,15,90,Pre-roll,6,9,Yes (pre-roll),6,9,NA,NA
+Plex,NA,NA,NA,NA,NA,NA,NA,NA,NA,15,15,6,12,180,180,180,180,Pre-roll,5,5,Pre-roll,5,5,NA,NA
+Sling Freestream,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,8,4,6,45,60,45,60,Pre-roll,8,11,Pre-roll,8,11,NA,NA
