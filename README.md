@@ -5,7 +5,7 @@ This repository contains the final project for Miami's ISA401 class for Group 5.
 This project investigates a central question in today’s media landscape:
 How do advertisements influence the success of a streaming service?
 
-As streaming platforms increasingly adopt ad‑supported models, understanding the relationship between ad load, ad spending, user engagement, and platform performance has become essential. To explore this, we compiled data from eight different sources, consolidated them into a unified dataset, and analyzed cross‑platform patterns to uncover meaningful insights.
+As streaming platforms increasingly adopt ad‑supported models, understanding the relationship between ad load, ad spending, user engagement, and platform performance has become essential. To explore this, we compiled data from six different sources, consolidated them into a unified dataset, and analyzed cross‑platform patterns to uncover meaningful insights.
 
 Our goal was to determine how advertising contributes to a platform’s revenue, viewership, subscriber base, and overall market presence.
 
@@ -34,27 +34,10 @@ Data used:
 - Year‑over‑year ad spending percentage change.
 
 
-
-[Statista – Video Streaming Services Ad Revenue Growth USA (2023–2027)](https://www.statista.com/statistics/1346476/video-streaming-ad-revenue-growth-usa/)
-
-Data used:
-- Projected compound annual growth rate (CAGR) for ad‑supported streaming services.
-
-
-
-[AdWave – Which Streaming Service Has the Most Viewers? (Q4 2025)](https://adwave.com/resources/most-watched-streaming-service-q4-2025)
-
-Data used:
-- U.S. household penetration by platform.
-- Share of total U.S. TV viewing.
-
-
-
 [ElectroIQ – Streaming Services Statistics](https://electroiq.com/stats/streaming-services-statistics/)
 
 Data used:
 - Total global paid subscribers for each streaming service.
-
 
 
 [The Streamable - Which streaming services are best, worst when it comes to ads?](https://thestreamable.com/how-many-ads-does-each-streaming-service-show)
@@ -64,7 +47,6 @@ Data used:
 - Minimum and maximum ad break lengths (movies and TV).
 - Presence of pre‑roll ads (movies and 30‑minute episodes).
 - Minimum and maximum number of ad breaks (movies and 30‑minute episodes).
-
 
 
 [Statista – Average Daily Time Watching Selected Video Streaming Services in the U.S. (2025)](https://www.statista.com/statistics/1610005/daily-time-spent-video-streaming/)
