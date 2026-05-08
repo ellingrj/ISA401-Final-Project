@@ -1,13 +1,13 @@
 # Streaming Services Ad Data — Data Dictionary / Description
 
-**Dataset:** Streaming Services Ad Data (Created 5/4/2-26)  
+**Dataset:** Streaming Services Ad Data (Created 5/8/26)  
 **Publisher:** Rylee Elling
 
 ---
 
 ## Overview
 
-This dataset gives a clear snapshot of how major streaming services perform, how widely they’re used, and how much advertising they carry. It includes numbers on revenue, subscribers, ad spending, household reach, viewing share, and detailed ad‑load patterns. Altogether, it helps compare how big each platform is and what the ad experience looks like for viewers.
+This dataset gives a clear snapshot of how major streaming services perform, how widely they’re used, and how much advertising they carry. It includes numbers on revenue, subscribers, ad spending, and ad patterns. Altogether, it helps compare how big each platform is and what the ad experience looks like for viewers.
 
 ---
 
@@ -20,10 +20,7 @@ This dataset gives a clear snapshot of how major streaming services perform, how
 | `2024 Ad Spending (Millions)` | Total U.S. advertising spend directed to major streaming platforms in 2024 (May be empty for untracked revenues) | EMARKETER Top 10 US Streaming TV Platforms, Ranked by Ad Spending, 2024 & 2025 |
 | `2025 Ad Spending (Millions)` | Total U.S. advertising spend directed to major streaming platforms in 2025 (May be empty for untracked revenues) | EMARKETER Top 10 US Streaming TV Platforms, Ranked by Ad Spending, 2024 & 2025 |
 | `Ad Spending % Change` | Year‑over‑year percentage change in ad spending for each streaming platform. | EMARKETER Top 10 US Streaming TV Platforms, Ranked by Ad Spending, 2024 & 2025 |
-| `Compound Annual Growth Rate (CAGR) (%) ` | Projected CAGR of ad revenue for selected ad‑supported video streaming services from 2023–2027 | Statista – Video streaming services ad revenue growth USA 2023–2027 |
-| `U.S. household penetration (% of US households)` | Percentage of U.S. households subscribing to or using a given streaming service | AdWave – Which Streaming Service Has the Most Viewers? (Q4 2025): What the Latest Data Actually Reveals |
 | `Subscribers (Millions)` | Total number of paid subscribers worldwide for each major streaming service | ElectroIQ – Streaming Services Statistics |
-| `Share of total U.S. TV viewing (%)` | The percentage of all television viewing time in the United States attributed to a specific streaming platform. | Adwave — Which Streaming Service Has the Most Viewers? (Q4 2025) |
 | `Minimum Ads per movie (minutes)` | The minimum amount of time ads are shown during a movie for each streaming service | Streamable — Which streaming services are best, worst when it comes to ads? |
 | `Maximum Ads per movie (minutes)` | The maximum amount of time ads are shown during a movie for each streaming service | Streamable — Which streaming services are best, worst when it comes to ads? |
 | `Minimum Ads per TV episode (minutes)` | The maximum amount of time ads are shown during a TV show for each streaming service | Streamable — Which streaming services are best, worst when it comes to ads? |
