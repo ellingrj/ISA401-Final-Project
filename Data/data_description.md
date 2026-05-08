@@ -19,7 +19,7 @@ This dataset gives a clear snapshot of how major streaming services perform, how
 | `Subscription OTT Video Viewers (Millions)` | Estimated number of individuals in the U.S. who watch subscription-based OTT (over‑the‑top) video services such as Netflix, Hulu, Disney+, etc. | Brandience – Why Video Streaming Ads Are the Next Big Opportunity for Digital Marketers |
 | `2024 Ad Spending (Millions)` | Total U.S. advertising spend directed to major streaming platforms in 2024 (May be empty for untracked revenues) | EMARKETER Top 10 US Streaming TV Platforms, Ranked by Ad Spending, 2024 & 2025 |
 | `2025 Ad Spending (Millions)` | Total U.S. advertising spend directed to major streaming platforms in 2025 (May be empty for untracked revenues) | EMARKETER Top 10 US Streaming TV Platforms, Ranked by Ad Spending, 2024 & 2025 |
-| `Ad Spending % Change` | Year‑over‑year percentage change in ad spending for each streaming platform. | EMARKETER Top 10 US Streaming TV Platforms, Ranked by Ad Spending, 2024 & 2025 |
+| `Ad Spending % Change` | Year‑over‑year percentage change in ad spending for each streaming platform. (0.04 -> 4%) | EMARKETER Top 10 US Streaming TV Platforms, Ranked by Ad Spending, 2024 & 2025 |
 | `Subscribers (Millions)` | Total number of paid subscribers worldwide for each major streaming service | ElectroIQ – Streaming Services Statistics |
 | `Minimum Ads per movie (minutes)` | The minimum amount of time ads are shown during a movie for each streaming service | Streamable — Which streaming services are best, worst when it comes to ads? |
 | `Maximum Ads per movie (minutes)` | The maximum amount of time ads are shown during a movie for each streaming service | Streamable — Which streaming services are best, worst when it comes to ads? |
