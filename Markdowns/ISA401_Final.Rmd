@@ -11,12 +11,13 @@ This file contains information about the data acquisition, cleaning, transformat
 We acquire data from 6 different sources, culminating in a dataset with 23 data categories and 15 different streaming services. 
 
 
-
 ```{r}
+# Open a chat connection to OpenAI using the ellmer package
 chat <- ellmer::chat_openai(
   model = "gpt-5-mini-2025-08-07"
 )
 
+# Open the .Renviron file for this project so you can edit environment variables
 usethis::edit_r_environ(scope = "project")
 
 ```
