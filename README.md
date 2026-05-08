@@ -1,5 +1,6 @@
 # ISA401 Final Project
 This repository contains the final project for Miami's ISA401 class for Group 5.
+Members: Rylee Elling, Lauren Gentile, Sophia Guibord, and Claire Kuzak.
 
 # Our Project: How do advertisements influence the success of a streaming service?
 This project investigates a central question in today’s media landscape:
@@ -82,6 +83,8 @@ To ensure all of our data was valid we checked:
 
 4. Dataset Integration: 
 All variables were combined into a single structured dataset, enabling cross‑platform comparisons and correlation analysis. The final dataset included 15 different platforms and 22 different metrics. 
+
+View our presentation on the technical aspects of this project [here](https://www.youtube.com/watch?v=DyNn4ho0vrg).
 
 5. Exploratory Data Analysis: 
 We examined...
