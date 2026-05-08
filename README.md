@@ -91,7 +91,7 @@ We examined...
 - Watch Time vs Max Number of Ads for TV episodes to view how often ads are being playing in a single episode. 
 
 7. Insight Generation: 
-Using visualizations and statistical summaries, we developed insights into:
+Using visualizations and statistical summaries [created in Tableau](https://public.tableau.com/shared/DSYTFDNGX?:display_count=n&:origin=viz_share_link), we developed insights into:
 - Engagement score: Netflix dominates engagement by a significant margin, having an average score of 11,605 while other platforms like Hulu, Amazon Prime, and Disney+ hold steady in the middle, and HBO Max and Peacock are falling behind. This reveals that a larger subscriber base does not always correlate with stronger viewer engagement. Platforms with lower scores struggle to justify premier ad rates, regardless of how many subscribers they may have. 
 
 
